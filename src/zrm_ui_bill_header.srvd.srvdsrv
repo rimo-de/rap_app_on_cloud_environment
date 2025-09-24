@@ -1,0 +1,8 @@
+@EndUserText.label: 'Service Definition'
+define service ZRM_UI_BILL_HEADER {
+  expose ZRM_C_BILL_HEADER  as BillHeader;
+  expose ZRM_C_BILL_ITEM    as BillItems;
+  expose ZRM_I_BILL_TYPE_VH as BillType;
+  expose /DMO/I_Customer    as Customer;
+  expose I_Currency         as Currency;
+}
