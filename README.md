@@ -9,7 +9,7 @@ The implementation includes unmanaged numbering, value helps, validation logic, 
 
 - **RAP Application with Draft**  
   Built on the SAP BTP ABAP Environment using the Managed scenario with Draft enabled for create, edit, and delete operations.  
-  ![Initial Report](./1.%20Initial%20Report.png)
+  ![Initial Report](img/1. Initial Report.png)
 
 - **Unmanaged Numbering (Early Number Assignment)**  
   Implemented early numbering for billing documents in a managed scenario.  
@@ -35,4 +35,5 @@ The implementation includes unmanaged numbering, value helps, validation logic, 
 
 ## Repository
 👉 [rap_app_on_cloud_environment](https://github.com/rimo-de/rap_app_on_cloud_environment.git)
+
 
