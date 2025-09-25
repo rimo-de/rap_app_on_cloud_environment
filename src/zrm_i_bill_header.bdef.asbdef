@@ -7,6 +7,7 @@ persistent table zrm_bill_header
 draft table zrm_bhdr_d
 lock master
 total etag Lastchangedat
+early numbering
 authorization master ( instance, global )
 etag master Locallastchangedat
 {
@@ -20,10 +21,10 @@ etag master Locallastchangedat
   draft action Discard;
   draft determine action Prepare;
 
-  field ( mandatory : create, readonly : update ) BillId;
+  field ( readonly ) BillId;
   field ( readonly ) NetAmount, Currency;
-  association _Billitem { create; with draft;}
 
+  association _Billitem { create; with draft; }
   internal action recalculate_net_amount;
 
   mapping for zrm_bill_header
@@ -48,34 +49,36 @@ persistent table zrm_bill_item
 draft table zrm_bitm_d
 lock dependent by _BillHeader
 authorization dependent by _BillHeader
+early numbering
 etag master Locallastchangedat
 {
   update;
   delete;
 
-  field ( readonly : update, mandatory : create ) BillId, ItemNo;
-  association _BillHeader { with draft;}
+  field ( readonly ) BillId, ItemNo;
+  field ( mandatory : update ) ItemAmount, Currency;
 
-  validation check_currency on save { create; field Currency; }
+  association _BillHeader { with draft; }
 
+  validation check_currency on save { create; update; field Currency; }
   determination calculate_net_amount on save { create; update; field ItemAmount, Currency; }
 
   mapping for zrm_bill_item
-  {
-    BillId      = bill_id;
-    ItemNo      = item_no;
-    MaterialId  = material_id;
-    Description = description;
-    Quantity    = quantity;
-    ItemAmount  = item_amount;
-    Currency    = currency;
-    Uom         = uom;
-    CreatedBy = createdby;
-    CreateDat = createdat;
-    LastChangedBy = lastchangedby;
-    LastChangeDat = lastchangedat;
-    LocalLastChangeDat = locallastchangedat;
-  }
+    {
+      BillId             = bill_id;
+      ItemNo             = item_no;
+      MaterialId         = material_id;
+      Description        = description;
+      Quantity           = quantity;
+      ItemAmount         = item_amount;
+      Currency           = currency;
+      Uom                = uom;
+      CreatedBy          = createdby;
+      CreateDat          = createdat;
+      LastChangedBy      = lastchangedby;
+      LastChangeDat      = lastchangedat;
+      LocalLastChangeDat = locallastchangedat;
+    }
 
 
 }

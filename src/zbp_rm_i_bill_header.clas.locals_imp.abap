@@ -36,8 +36,8 @@ CLASS lhc_billitem IMPLEMENTATION.
 
       IF <fs_billing_items>-Currency NE 'EUR'.
         APPEND VALUE #(  %tky = <fs_billing_items>-%tky ) TO failed-billitem.
+
         APPEND VALUE #(  %tky              = <fs_billing_items>-%tky
-*                        %state_area       = 'CHECK_CURRENCY'
                          %element-Currency = if_abap_behv=>mk-on
                          %msg              = NEW zcl_rm_billing_exceptions( currency_code = <fs_billing_items>-Currency
                                                                             textid        = zcl_rm_billing_exceptions=>currency_not_valid
@@ -59,8 +59,15 @@ CLASS lhc_ZRM_I_BILL_HEADER DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
       IMPORTING REQUEST requested_authorizations FOR BillHeader RESULT result.
+
     METHODS recalculate_net_amount FOR MODIFY
       IMPORTING keys FOR ACTION BillHeader~recalculate_net_amount.
+
+    METHODS earlynumbering_cba_Billitem FOR NUMBERING
+      IMPORTING entities FOR CREATE BillHeader\_Billitem.
+
+    METHODS earlynumbering_create FOR NUMBERING
+      IMPORTING entities FOR CREATE BillHeader.
 
 ENDCLASS.
 
@@ -120,6 +127,40 @@ CLASS lhc_ZRM_I_BILL_HEADER IMPLEMENTATION.
       ENTITY BillHeader
         UPDATE FIELDS ( NetAmount Currency )
         WITH CORRESPONDING #( lt_bill_header ).
+
+  ENDMETHOD.
+
+  METHOD earlynumbering_create.
+
+    SELECT MAX( bill_id ) FROM zrm_bill_header INTO @DATA(lv_billing_id).
+
+    LOOP AT entities INTO DATA(ls_billing_header).
+
+      IF ls_billing_header-BillId IS INITIAL AND ls_billing_header-%is_draft EQ if_abap_behv=>mk-on.
+        ls_billing_header-BillId = lv_billing_id + 1.
+        APPEND CORRESPONDING #( ls_billing_header ) TO mapped-billheader.
+      ELSE.
+        APPEND CORRESPONDING #( ls_billing_header ) TO mapped-billheader.
+      ENDIF.
+    ENDLOOP.
+
+
+  ENDMETHOD.
+
+  METHOD earlynumbering_cba_Billitem.
+
+    LOOP AT entities INTO DATA(ls_billing).
+      LOOP AT ls_billing-%target INTO DATA(ls_billing_item).
+        IF ls_billing_item-ItemNo IS INITIAL AND ls_billing_item-%is_draft EQ if_abap_behv=>mk-on.
+
+          SELECT MAX( item_no ) FROM zrm_bill_item WHERE bill_id EQ @ls_billing_item-BillId INTO @DATA(lv_billing_item_id).
+          ls_billing_item-ItemNo = lv_billing_item_id + 1.
+          APPEND CORRESPONDING #( ls_billing_item ) TO mapped-billitem.
+        ELSE.
+          APPEND CORRESPONDING #( ls_billing_item ) TO mapped-billitem.
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
 
   ENDMETHOD.
 

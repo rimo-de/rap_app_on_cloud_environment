@@ -52,11 +52,11 @@ annotate entity ZRM_C_BILL_HEADER with
   @UI: {  lineItem:       [ { position: 40 } ] ,
         identification: [ { position: 40 } ]}
   CustomerId;
-  
+
   @UI.hidden: true
   CustomerName;
 
-    @EndUserText.label: 'Net Amount'
+  @EndUserText.label: 'Net Amount'
   @UI: {  lineItem:       [ { position: 50 } ] ,
         identification: [ { position: 50 } ]}
   NetAmount;
